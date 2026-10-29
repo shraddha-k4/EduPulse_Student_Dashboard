@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduPulse | Student Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#"><span class="brand-mark">E</span><span>Edu<span class="brand-light">Pulse</span></span></a>
+      <div class="side-label">WORKSPACE</div>
+      <nav class="nav">
+        <button class="nav-item active" data-page="overview"><span class="nav-icon">◫</span> Overview</button>
+        <button class="nav-item" data-page="students"><span class="nav-icon">♙</span> Students</button>
+        <button class="nav-item" data-page="analytics"><span class="nav-icon">⌁</span> Analytics</button>
+        <button class="nav-item" data-page="risk"><span class="nav-icon">◎</span> Dropout risk</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="help-card"><div class="help-icon">✦</div><strong>Make data useful.</strong><p>Upload your student CSV to explore academic patterns.</p><label class="upload-button" for="csvInput">Upload dataset</label></div>
+        <div class="profile"><div class="avatar">SA</div><div><strong>Student Analytics</strong><span>Academic insights</span></div><span class="dots">•••</span></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div><div class="eyebrow">ACADEMIC INTELLIGENCE</div><h1 id="pageTitle">Overview</h1></div>
+        <div class="top-actions"><span class="status-dot"></span><span class="status-text" id="datasetStatus">Demo data loaded</span><label class="top-upload" for="csvInput">↑ Import CSV</label><input id="csvInput" type="file" accept=".csv,text/csv" hidden /></div>
+      </header>
+
+      <section class="page active" id="page-overview">
+        <div class="welcome-row"><div><h2>Your students, at a glance.</h2><p>Understand performance, engagement, and potential dropout signals.</p></div><div class="date-chip">✧ &nbsp; Academic snapshot</div></div>
+        <div class="stats-grid">
+          <article class="stat-card"><div class="stat-top"><span>Total students</span><span class="stat-icon lavender">♙</span></div><div class="stat-value" id="totalStudents">1,248</div><div class="stat-foot"><span class="trend positive">↗</span> Records in dataset</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Average attendance</span><span class="stat-icon mint">◷</span></div><div class="stat-value"><span id="avgAttendance">82.4</span><small>%</small></div><div class="stat-foot"><span class="mini-line">⌁</span> Student engagement</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Average semester GPA</span><span class="stat-icon peach">✦</span></div><div class="stat-value" id="avgGpa">7.68</div><div class="stat-foot"><span class="trend positive">↗</span> Semester 2 performance</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Dropout records</span><span class="stat-icon rose">!</span></div><div class="stat-value" id="dropoutCount">96</div><div class="stat-foot"><span id="dropoutRate" class="trend warning">7.7%</span> of loaded records</div></article>
+        </div>
+        <div class="content-grid">
+          <article class="panel chart-panel"><div class="panel-heading"><div><h3>Academic performance</h3><p>Average GPA across semesters</p></div><span class="panel-pill">GPA trend</span></div><div class="chart-wrap"><canvas id="gpaChart"></canvas></div></article>
+          <article class="panel chart-panel"><div class="panel-heading"><div><h3>Student status</h3><p>Current dataset breakdown</p></div><button class="more-btn" aria-label="More">•••</button></div><div class="donut-wrap"><canvas id="statusChart"></canvas><div class="donut-center"><strong id="statusTotal">1,248</strong><span>students</span></div></div><div class="legend"><span><i class="legend-dot purple"></i> Continuing</span><span><i class="legend-dot coral"></i> Dropout</span></div></article>
+        </div>
+        <div class="content-grid lower-grid">
+          <article class="panel chart-panel"><div class="panel-heading"><div><h3>Attendance distribution</h3><p>How regularly students attend</p></div><span class="panel-pill">Attendance</span></div><div class="chart-wrap short"><canvas id="attendanceChart"></canvas></div></article>
+          <article class="panel insight-panel"><div class="panel-heading"><div><h3>Quick insights</h3><p>Patterns worth paying attention to</p></div><span class="sparkle">✦</span></div><div id="insights"><div class="insight"><span class="insight-bullet purple-bg">↗</span><div><strong>Attendance matters</strong><p>Compare attendance with GPA to understand student engagement.</p></div></div><div class="insight"><span class="insight-bullet orange-bg">!</span><div><strong>Review missed deadlines</strong><p>Students with repeated missed deadlines may need extra support.</p></div></div><div class="insight"><span class="insight-bullet green-bg">✓</span><div><strong>Explore your data</strong><p>Import your CSV to replace this illustrative sample.</p></div></div></div></article>
+        </div>
+      </section>
+
+      <section class="page" id="page-students">
+        <div class="welcome-row"><div><h2>Student directory</h2><p>Search, filter, and review academic records.</p></div><div class="filter-row"><input id="studentSearch" class="search-input" placeholder="Search students..." /><select id="statusFilter"><option value="all">All statuses</option><option value="0">Continuing</option><option value="1">Dropout</option></select></div></div>
+        <article class="panel table-panel"><div class="table-head"><div><h3>Student records</h3><p id="tableCount">Showing sample records</p></div><span class="panel-pill">Live table</span></div><div class="table-scroll"><table><thead><tr><th>Student ID</th><th>Age</th><th>Attendance</th><th>Semester 2 GPA</th><th>Missed deadlines</th><th>Status</th></tr></thead><tbody id="studentRows"></tbody></table></div><div class="table-foot"><span id="tableFootCount">Showing 8 records</span><span>Import a CSV to view your full dataset</span></div></article>
+      </section>
+
+      <section class="page" id="page-analytics">
+        <div class="welcome-row"><div><h2>Explore the patterns.</h2><p>Visual summaries of grades, attendance, and student outcomes.</p></div><div class="date-chip">✧ &nbsp; Data exploration</div></div>
+        <div class="content-grid">
+          <article class="panel chart-panel"><div class="panel-heading"><div><h3>Admission grade distribution</h3><p>Frequency by grade range</p></div></div><div class="chart-wrap"><canvas id="gradeChart"></canvas></div></article>
+          <article class="panel chart-panel"><div class="panel-heading"><div><h3>Attendance vs GPA</h3><p>Each point represents a student</p></div></div><div class="chart-wrap"><canvas id="scatterChart"></canvas></div></article>
+        </div>
+        <div class="content-grid lower-grid"><article class="panel chart-panel"><div class="panel-heading"><div><h3>Average attendance by status</h3><p>Compare student groups</p></div></div><div class="chart-wrap short"><canvas id="groupChart"></canvas></div></article><article class="panel metrics-panel"><div class="panel-heading"><div><h3>Dataset quality</h3><p>Basic data checks</p></div></div><div class="quality-row"><span>Rows loaded</span><strong id="qualityRows">1,248</strong></div><div class="quality-row"><span>Missing attendance</span><strong id="missingAttendance">0</strong></div><div class="quality-row"><span>Duplicate records</span><strong id="duplicateRows">0</strong></div><div class="quality-note">This browser dashboard provides descriptive analysis. Your Python scikit-learn models are not executed in the browser.</div></article></div>
+      </section>
+
+      <section class="page" id="page-risk">
+        <div class="welcome-row"><div><h2>Early support signals.</h2><p>Review students who may benefit from a closer check-in.</p></div><span class="panel-pill">Heuristic preview</span></div>
+        <div class="notice"><span>ⓘ</span><p><strong>Important:</strong> This page uses simple illustrative rules (attendance and GPA), not your trained Logistic Regression model. It is not a diagnosis or a definitive dropout prediction.</p></div>
+        <div class="stats-grid risk-stats"><article class="stat-card"><div class="stat-top"><span>High-priority review</span><span class="stat-icon rose">!</span></div><div class="stat-value" id="highRiskCount">0</div><div class="stat-foot">Attendance below 60% or GPA below 5</div></article><article class="stat-card"><div class="stat-top"><span>Needs attention</span><span class="stat-icon peach">◷</span></div><div class="stat-value" id="mediumRiskCount">0</div><div class="stat-foot">Attendance below 75% or GPA below 6</div></article><article class="stat-card"><div class="stat-top"><span>Review suggestions</span><span class="stat-icon mint">✓</span></div><div class="stat-value">Support first</div><div class="stat-foot">Use this as a conversation starter</div></article></div>
+        <article class="panel table-panel"><div class="table-head"><div><h3>Students to review</h3><p>Sorted by support signal</p></div></div><div class="table-scroll"><table><thead><tr><th>Student ID</th><th>Attendance</th><th>Semester 2 GPA</th><th>Missed deadlines</th><th>Review signal</th></tr></thead><tbody id="riskRows"></tbody></table></div></article>
+      </section>
+      <footer>EduPulse <span>•</span> Student academic performance dashboard <span class="footer-right">Built for data exploration</span></footer>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
